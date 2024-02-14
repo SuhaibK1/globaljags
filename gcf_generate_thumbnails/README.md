@@ -12,13 +12,13 @@ Deploy the Cloud Function with the following command. Ensure you replace the `tr
 gcloud functions deploy generate_thumbnails \
 --runtime nodejs18 \
 --trigger-event google.storage.object.finalize \
---entry-point generateThumbnails \
---trigger-resource sp24-elliott-globaljags-uploads
+--entry-point generateThumbnail \
+--trigger-resource sp24-41200-skankodi-gj-uploads
 ```
 
 ## Trigger the Cloud Function
 Trigger the Cloud Function by uploading a sample image to your bucket. **Ensure you replace YOUR BUCKET NAME in the command below.**
 
 ```
-gsutil cp gs://sp23-globaljags-dev-sample-images/china/china1.jpeg gs://sp24-elliott-globaljags-uploads
+gsutil cp gs://sp23-globaljags-dev-sample-images/china/china1.jpeg gs://sp24-41200-skankodi-gj-uploads
 ```
