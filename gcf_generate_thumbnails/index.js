@@ -64,7 +64,7 @@ exports.generateThumbnail = async (file, context) => {
       destination: tempFilePath
     });
 
-    // Pass the LOCAL file to our readExifData function
+    // Pass the local file to readExifData function
     const gpsObject = await readExifData(tempFilePath);
     console.log(gpsObject);
     const gpsDecimal = getGPSCoordinates(gpsObject);
@@ -74,7 +74,7 @@ exports.generateThumbnail = async (file, context) => {
 
     // Upload our local version of the file to the final images bucket
     await finalBucket.upload(tempFilePath);
-
+    
     // Create a name for the thumbnail image
     // The value for this will be something like `thumb@64_1234567891234567.jpg`
     const thumbName = `thumb@64_${finalFileName}`;
@@ -92,6 +92,12 @@ exports.generateThumbnail = async (file, context) => {
     // Delete the temp working directory and its files from the GCF's VM
     await fs.remove(workingDir);
 
+    // Create the HTTPS URL to the thumbnail image
+    const thumbURL = `https://storage.cloud.google.com/${thumbnailsBucket.name}/${thumbName}?authuser=1`;
+
+    // Create the HTTPS URL to the “final” image
+    const finalURL = `https://storage.cloud.google.com/${finalBucket.name}/${finalFileName}?authuser=1`;
+
     // Write the dataObject to a Firestore document
     const firestore = new Firestore({
       projectId: "sp24-41200-skankodi-globaljags"
@@ -100,10 +106,10 @@ exports.generateThumbnail = async (file, context) => {
    // Create a JavaScript object with necessary information about the photo
     const dataObject = {};
     dataObject.imageName = finalFileName;
-    dataObject.imageURL  = tempFilePath;
+    dataObject.imageURL  = finalURL;
     dataObject.latitude = gpsDecimal.lat;
     dataObject.longitude = gpsDecimal.lon;
-    dataObject.thumbURL = thumbPath;
+    dataObject.thumbURL = thumbURL;
 
     const collectionRef = firestore.collection('photos');
     const documentRef = await collectionRef.add(dataObject);
